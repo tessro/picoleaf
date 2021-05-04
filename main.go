@@ -186,7 +186,7 @@ func main() {
 
 	usr, err := user.Current()
 	if err != nil {
-		fmt.Printf("Failed to fetch current user: %v", err)
+		fmt.Printf("error: failed to fetch current user: %v", err)
 		os.Exit(1)
 	}
 	dir := usr.HomeDir
@@ -194,7 +194,7 @@ func main() {
 
 	cfg, err := ini.Load(configFilePath)
 	if err != nil {
-		fmt.Printf("Failed to read file: %v", err)
+		fmt.Printf("error: failed to read file: %v", err)
 		os.Exit(1)
 	}
 
@@ -216,7 +216,7 @@ func main() {
 			}
 			bytes, err := json.Marshal(state)
 			if err != nil {
-				fmt.Printf("Failed to marshal JSON: %v", err)
+				fmt.Printf("error: failed to marshal JSON: %v", err)
 				os.Exit(1)
 			}
 			client.Put("state", bytes)
@@ -226,7 +226,7 @@ func main() {
 			}
 			bytes, err := json.Marshal(state)
 			if err != nil {
-				fmt.Printf("Failed to marshal JSON: %v", err)
+				fmt.Printf("error: failed to marshal JSON: %v", err)
 				os.Exit(1)
 			}
 			client.Put("state", bytes)
@@ -236,7 +236,7 @@ func main() {
 			}
 			bytes, err := json.Marshal(state)
 			if err != nil {
-				fmt.Printf("Failed to marshal JSON: %v", err)
+				fmt.Printf("error: failed to marshal JSON: %v", err)
 				os.Exit(1)
 			}
 			client.Put("state", bytes)
@@ -262,7 +262,7 @@ func doEffectCommand(client Client, args []string) {
 	case "list":
 		list, err := client.ListEffects()
 		if err != nil {
-			fmt.Printf("Failed retrieve effects list: %v", err)
+			fmt.Printf("error: failed retrieve effects list: %v", err)
 			os.Exit(1)
 		}
 		for _, name := range list {
@@ -277,7 +277,7 @@ func doEffectCommand(client Client, args []string) {
 		name := args[1]
 		err := client.SelectEffect(name)
 		if err != nil {
-			fmt.Printf("Failed to select effect: %v", err)
+			fmt.Printf("error: failed to select effect: %v", err)
 			os.Exit(1)
 		}
 	}
@@ -291,25 +291,25 @@ func doHSLCommand(client Client, args []string) {
 
 	hue, err := strconv.Atoi(args[0])
 	if err != nil || hue < 0 || hue > 360 {
-		fmt.Println("hue must be an integer 0-100")
+		fmt.Println("error: hue must be an integer 0-100")
 		os.Exit(1)
 	}
 
 	sat, err := strconv.Atoi(args[1])
 	if err != nil || sat < 0 || sat > 100 {
-		fmt.Println("saturation must be an integer 0-360")
+		fmt.Println("error: saturation must be an integer 0-360")
 		os.Exit(1)
 	}
 
 	lum, err := strconv.Atoi(args[2])
 	if err != nil || lum < 0 || lum > 100 {
-		fmt.Println("luminosity must be an integer 0-100")
+		fmt.Println("error: luminosity must be an integer 0-100")
 		os.Exit(1)
 	}
 
 	err = client.SetHSL(hue, sat, lum)
 	if err != nil {
-		fmt.Printf("Failed to set HSL: %v", err)
+		fmt.Printf("error: failed to set HSL: %v", err)
 		os.Exit(1)
 	}
 }
@@ -358,25 +358,25 @@ func doRGBCommand(client Client, args []string) {
 
 	red, err := strconv.Atoi(args[0])
 	if err != nil || red < 0 || red > 255 {
-		fmt.Println("red must be an integer 0-255")
+		fmt.Println("error: red must be an integer 0-255")
 		os.Exit(1)
 	}
 
 	green, err := strconv.Atoi(args[1])
 	if err != nil || green < 0 || green > 255 {
-		fmt.Println("green must be an integer 0-255")
+		fmt.Println("error: green must be an integer 0-255")
 		os.Exit(1)
 	}
 
 	blue, err := strconv.Atoi(args[2])
 	if err != nil || blue < 0 || blue > 255 {
-		fmt.Println("blue must be an integer 0-255")
+		fmt.Println("error: blue must be an integer 0-255")
 		os.Exit(1)
 	}
 
 	err = client.SetRGB(red, green, blue)
 	if err != nil {
-		fmt.Printf("Failed to set RGB: %v", err)
+		fmt.Printf("error: failed to set RGB: %v", err)
 		os.Exit(1)
 	}
 }
