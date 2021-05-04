@@ -63,6 +63,10 @@ func main() {
 	if flag.NArg() > 0 {
 		cmd := flag.Arg(0)
 		switch cmd {
+		case "effect":
+			doEffectCommand(client, flag.Args()[1:])
+		case "hsl":
+			doHSLCommand(client, flag.Args()[1:])
 		case "off":
 			state := State{
 				On: &OnProperty{false},
@@ -91,14 +95,10 @@ func main() {
 				fmt.Printf("error: failed to turn on Nanoleaf: %v", err)
 				os.Exit(1)
 			}
-		case "hsl":
-			doHSLCommand(client, flag.Args()[1:])
 		case "rgb":
 			doRGBCommand(client, flag.Args()[1:])
 		case "temp":
 			doColorTemperatureCommand(client, flag.Args()[1:])
-		case "effect":
-			doEffectCommand(client, flag.Args()[1:])
 		default:
 			usage()
 		}
