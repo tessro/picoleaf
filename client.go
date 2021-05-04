@@ -102,6 +102,30 @@ func (c Client) ListEffects() ([]string, error) {
 	return list, err
 }
 
+// Off turns off Nanoleaf.
+func (c Client) Off() error {
+	state := State{
+		On: &OnProperty{false},
+	}
+	bytes, err := json.Marshal(state)
+	if err != nil {
+		return err
+	}
+	return c.Put("state", bytes)
+}
+
+// On turns on Nanoleaf.
+func (c Client) On() error {
+	state := State{
+		On: &OnProperty{true},
+	}
+	bytes, err := json.Marshal(state)
+	if err != nil {
+		return err
+	}
+	return c.Put("state", bytes)
+}
+
 // SelectEffect activates the specified effect.
 func (c Client) SelectEffect(name string) error {
 	req := effectsSelectRequest{

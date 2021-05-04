@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -68,29 +67,13 @@ func main() {
 		case "hsl":
 			doHSLCommand(client, flag.Args()[1:])
 		case "off":
-			state := State{
-				On: &OnProperty{false},
-			}
-			bytes, err := json.Marshal(state)
-			if err != nil {
-				fmt.Printf("error: failed to marshal JSON: %v", err)
-				os.Exit(1)
-			}
-			err = client.Put("state", bytes)
+			err = client.Off()
 			if err != nil {
 				fmt.Printf("error: failed to turn off Nanoleaf: %v", err)
 				os.Exit(1)
 			}
 		case "on":
-			state := State{
-				On: &OnProperty{true},
-			}
-			bytes, err := json.Marshal(state)
-			if err != nil {
-				fmt.Printf("error: failed to marshal JSON: %v", err)
-				os.Exit(1)
-			}
-			err = client.Put("state", bytes)
+			err = client.On()
 			if err != nil {
 				fmt.Printf("error: failed to turn on Nanoleaf: %v", err)
 				os.Exit(1)
