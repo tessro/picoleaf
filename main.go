@@ -230,16 +230,6 @@ func main() {
 				os.Exit(1)
 			}
 			client.Put("state", bytes)
-		case "white":
-			state := State{
-				ColorTemperature: &ColorTemperatureProperty{6500},
-			}
-			bytes, err := json.Marshal(state)
-			if err != nil {
-				fmt.Printf("error: failed to marshal JSON: %v", err)
-				os.Exit(1)
-			}
-			client.Put("state", bytes)
 		case "hsl":
 			doHSLCommand(client, flag.Args()[1:])
 		case "rgb":
