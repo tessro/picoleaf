@@ -181,6 +181,22 @@ type EffectsSelectRequest struct {
 	Select string `json:"select"`
 }
 
+func usage() {
+	fmt.Println("usage: picoleaf <command>")
+	fmt.Println()
+	fmt.Println("Commands:")
+	fmt.Println()
+	fmt.Println("   on       Turn on Nanoleaf")
+	fmt.Println("   off      Turn off Nanoleaf")
+	fmt.Println()
+	fmt.Println("   effect   Control Nanoleaf effects")
+	fmt.Println()
+	fmt.Println("   hsl      Set Nanoleaf to the provided HSL")
+	fmt.Println("   rgb      Set Nanoleaf to the provided RGB")
+	fmt.Println()
+	os.Exit(1)
+}
+
 func main() {
 	flag.Parse()
 
@@ -236,7 +252,11 @@ func main() {
 			doRGBCommand(client, flag.Args()[1:])
 		case "effect":
 			doEffectCommand(client, flag.Args()[1:])
+		default:
+			usage()
 		}
+	} else {
+		usage()
 	}
 }
 
