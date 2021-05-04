@@ -118,18 +118,18 @@ func (c Client) SelectEffect(name string) error {
 
 // BrightnessProperty represents the brightness of the Nanoleaf.
 type BrightnessProperty struct {
-	Value    int16 `json:"value"`
-	Duration int16 `json:"duration,omitempty"`
+	Value    int `json:"value"`
+	Duration int `json:"duration,omitempty"`
 }
 
 // ColorTemperatureProperty represents the color temperature of the Nanoleaf.
 type ColorTemperatureProperty struct {
-	Value int16 `json:"value"`
+	Value int `json:"value"`
 }
 
 // HueProperty represents the hue of the Nanoleaf.
 type HueProperty struct {
-	Value int16 `json:"value"`
+	Value int `json:"value"`
 }
 
 // OnProperty represents the power state of the Nanoleaf.
@@ -139,7 +139,7 @@ type OnProperty struct {
 
 // SaturationProperty represents the saturation of the Nanoleaf.
 type SaturationProperty struct {
-	Value int16 `json:"value"`
+	Value int `json:"value"`
 }
 
 // State represents a Nanoleaf state.
