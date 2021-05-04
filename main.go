@@ -118,10 +118,10 @@ func (c Client) SelectEffect(name string) error {
 	return nil
 }
 
-// SetHSL sets the Nanoleaf's hue, saturation, and luminosity (brightness).
-func (c Client) SetHSL(hue int, sat int, luminosity int) error {
+// SetHSL sets the Nanoleaf's hue, saturation, and lightness (brightness).
+func (c Client) SetHSL(hue int, sat int, lightness int) error {
 	state := State{
-		Brightness: &BrightnessProperty{luminosity, 0},
+		Brightness: &BrightnessProperty{lightness, 0},
 		Hue:        &HueProperty{hue},
 		Saturation: &SaturationProperty{sat},
 	}
@@ -285,7 +285,7 @@ func doEffectCommand(client Client, args []string) {
 
 func doHSLCommand(client Client, args []string) {
 	if len(args) != 3 {
-		fmt.Println("usage: picoleaf hsl <hue> <saturation> <luminosity>")
+		fmt.Println("usage: picoleaf hsl <hue> <saturation> <lightness>")
 		os.Exit(1)
 	}
 
@@ -301,13 +301,13 @@ func doHSLCommand(client Client, args []string) {
 		os.Exit(1)
 	}
 
-	lum, err := strconv.Atoi(args[2])
-	if err != nil || lum < 0 || lum > 100 {
-		fmt.Println("error: luminosity must be an integer 0-100")
+	lightness, err := strconv.Atoi(args[2])
+	if err != nil || lightness < 0 || lightness > 100 {
+		fmt.Println("error: lightness must be an integer 0-100")
 		os.Exit(1)
 	}
 
-	err = client.SetHSL(hue, sat, lum)
+	err = client.SetHSL(hue, sat, lightness)
 	if err != nil {
 		fmt.Printf("error: failed to set HSL: %v", err)
 		os.Exit(1)
