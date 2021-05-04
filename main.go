@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strconv"
 
 	"gopkg.in/ini.v1"
 )
@@ -116,6 +117,23 @@ func (c Client) SelectEffect(name string) error {
 	return nil
 }
 
+// SetHSL sets the Nanoleaf's hue, saturation, and luminosity (brightness).
+func (c Client) SetHSL(hue int, sat int, luminosity int) error {
+	state := State{
+		Brightness: &BrightnessProperty{luminosity, 0},
+		Hue:        &HueProperty{hue},
+		Saturation: &SaturationProperty{sat},
+	}
+
+	bytes, err := json.Marshal(state)
+	if err != nil {
+		return err
+	}
+
+	c.Put("state", bytes)
+	return nil
+}
+
 // BrightnessProperty represents the brightness of the Nanoleaf.
 type BrightnessProperty struct {
 	Value    int `json:"value"`
@@ -215,6 +233,8 @@ func main() {
 				os.Exit(1)
 			}
 			client.Put("state", bytes)
+		case "hsl":
+			doHSLCommand(client, flag.Args()[1:])
 		case "red":
 			state := State{
 				Brightness: &BrightnessProperty{60, 0},
@@ -263,5 +283,36 @@ func doEffectCommand(client Client, args []string) {
 			fmt.Printf("Failed to select effect: %v", err)
 			os.Exit(1)
 		}
+	}
+}
+
+func doHSLCommand(client Client, args []string) {
+	if len(args) != 3 {
+		fmt.Println("usage: picoleaf hsl <hue> <saturation> <luminosity>")
+		os.Exit(1)
+	}
+
+	hue, err := strconv.Atoi(args[0])
+	if err != nil || hue < 0 || hue > 360 {
+		fmt.Println("hue must be an integer 0-100")
+		os.Exit(1)
+	}
+
+	sat, err := strconv.Atoi(args[1])
+	if err != nil || sat < 0 || sat > 100 {
+		fmt.Println("saturation must be an integer 0-360")
+		os.Exit(1)
+	}
+
+	lum, err := strconv.Atoi(args[2])
+	if err != nil || lum < 0 || lum > 100 {
+		fmt.Println("luminosity must be an integer 0-100")
+		os.Exit(1)
+	}
+
+	err = client.SetHSL(hue, sat, lum)
+	if err != nil {
+		fmt.Printf("Failed to set HSL: %v", err)
+		os.Exit(1)
 	}
 }
