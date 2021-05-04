@@ -20,14 +20,15 @@ func usage() {
 	fmt.Println()
 	fmt.Println("Commands:")
 	fmt.Println()
-	fmt.Println("   on       Turn on Nanoleaf")
-	fmt.Println("   off      Turn off Nanoleaf")
+	fmt.Println("   on           Turn on Nanoleaf")
+	fmt.Println("   off          Turn off Nanoleaf")
 	fmt.Println()
-	fmt.Println("   effect   Control Nanoleaf effects")
+	fmt.Println("   effect       Control Nanoleaf effects")
 	fmt.Println()
-	fmt.Println("   hsl      Set Nanoleaf to the provided HSL")
-	fmt.Println("   rgb      Set Nanoleaf to the provided RGB")
-	fmt.Println("   temp     Set Nanoleaf to the provided color temperature")
+	fmt.Println("   hsl          Set Nanoleaf to the provided HSL")
+	fmt.Println("   rgb          Set Nanoleaf to the provided RGB")
+	fmt.Println("   temp         Set Nanoleaf to the provided color temperature")
+	fmt.Println("   brightness   Set Nanoleaf to the provided brightness")
 	fmt.Println()
 	os.Exit(1)
 }
@@ -62,6 +63,8 @@ func main() {
 	if flag.NArg() > 0 {
 		cmd := flag.Arg(0)
 		switch cmd {
+		case "brightness":
+			doBrightnessCommand(client, flag.Args()[1:])
 		case "effect":
 			doEffectCommand(client, flag.Args()[1:])
 		case "hsl":
@@ -87,6 +90,25 @@ func main() {
 		}
 	} else {
 		usage()
+	}
+}
+
+func doBrightnessCommand(client Client, args []string) {
+	if len(args) < 1 {
+		fmt.Println("usage: picoleaf brightness <brightness>")
+		os.Exit(1)
+	}
+
+	brightness, err := strconv.Atoi(args[0])
+	if err != nil || brightness < 0 || brightness > 100 {
+		fmt.Println("error: temperature must be an integer 0-100")
+		os.Exit(1)
+	}
+
+	err = client.SetBrightness(brightness)
+	if err != nil {
+		fmt.Printf("error: failed to set brightness: %v", err)
+		os.Exit(1)
 	}
 }
 

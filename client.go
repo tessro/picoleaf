@@ -140,6 +140,21 @@ func (c Client) SelectEffect(name string) error {
 	return nil
 }
 
+// SetBrightness sets the Nanoleaf's brightness.
+func (c Client) SetBrightness(brightness int) error {
+	state := State{
+		Brightness: &BrightnessProperty{brightness, 0},
+	}
+
+	bytes, err := json.Marshal(state)
+	if err != nil {
+		return err
+	}
+
+	c.Put("state", bytes)
+	return nil
+}
+
 // SetColorTemperature sets the Nanoleaf's color temperature.
 func (c Client) SetColorTemperature(temperature int) error {
 	state := State{

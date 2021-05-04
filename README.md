@@ -41,6 +41,7 @@ picoleaf off  # Turn Nanoleaf off
 picoleaf hsl <hue> <saturation> <lightness>  # Set Nanoleaf to the provided HSL
 picoleaf rgb <red> <green> <blue>            # Set Nanoleaf to the provided RGB
 picoleaf temp <temperature>                  # Set Nanoleaf to the provided color temperature
+picoleaf brightness <temperature>            # Set Nanoleaf to the provided brightness
 
 # Effects
 picoleaf effect list           # List installed effects
