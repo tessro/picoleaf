@@ -49,6 +49,7 @@ func (c Client) Get(path string) (string, error) {
 
 	if c.Verbose {
 		fmt.Println("<===", string(body))
+		fmt.Println()
 	}
 	return string(body), nil
 }
@@ -58,6 +59,7 @@ func (c Client) Put(path string, body []byte) error {
 	if c.Verbose {
 		fmt.Println("PUT", path)
 		fmt.Println("===>", string(body))
+		fmt.Println()
 	}
 
 	url := c.Endpoint(path)
