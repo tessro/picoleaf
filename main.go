@@ -105,10 +105,14 @@ func main() {
 }
 
 func doEffectCommand(client Client, args []string) {
-	if len(args) < 1 {
+	usage := func() {
 		fmt.Println("usage: picoleaf effect list")
 		fmt.Println("       picoleaf effect select <name>")
 		os.Exit(1)
+	}
+
+	if len(args) < 1 {
+		usage()
 	}
 
 	command := args[0]
@@ -134,6 +138,8 @@ func doEffectCommand(client Client, args []string) {
 			fmt.Printf("error: failed to select effect: %v", err)
 			os.Exit(1)
 		}
+	default:
+		usage()
 	}
 }
 
