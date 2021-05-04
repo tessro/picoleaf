@@ -70,7 +70,11 @@ func main() {
 				fmt.Printf("error: failed to marshal JSON: %v", err)
 				os.Exit(1)
 			}
-			client.Put("state", bytes)
+			err = client.Put("state", bytes)
+			if err != nil {
+				fmt.Printf("error: failed to turn off Nanoleaf: %v", err)
+				os.Exit(1)
+			}
 		case "on":
 			state := State{
 				On: &OnProperty{true},
@@ -80,7 +84,11 @@ func main() {
 				fmt.Printf("error: failed to marshal JSON: %v", err)
 				os.Exit(1)
 			}
-			client.Put("state", bytes)
+			err = client.Put("state", bytes)
+			if err != nil {
+				fmt.Printf("error: failed to turn on Nanoleaf: %v", err)
+				os.Exit(1)
+			}
 		case "hsl":
 			doHSLCommand(client, flag.Args()[1:])
 		case "rgb":

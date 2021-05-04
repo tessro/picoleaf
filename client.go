@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"math"
 	"net/http"
 )
@@ -19,7 +18,7 @@ type Client struct {
 }
 
 // Get performs a GET request.
-func (c Client) Get(path string) string {
+func (c Client) Get(path string) (string, error) {
 	if *verbose {
 		fmt.Println("\nGET", path)
 	}
@@ -27,14 +26,14 @@ func (c Client) Get(path string) string {
 	url := c.Endpoint(path)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	req.Header.Set("Accept", "application/json")
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	if res.Body != nil {
@@ -43,17 +42,17 @@ func (c Client) Get(path string) string {
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	if *verbose {
 		fmt.Println("<===", string(body))
 	}
-	return string(body)
+	return string(body), nil
 }
 
 // Put performs a PUT request.
-func (c Client) Put(path string, body []byte) {
+func (c Client) Put(path string, body []byte) error {
 	if *verbose {
 		fmt.Println("PUT", path)
 		fmt.Println("===>", string(body))
@@ -62,7 +61,7 @@ func (c Client) Put(path string, body []byte) {
 	url := c.Endpoint(path)
 	req, err := http.NewRequest(http.MethodPut, url, nil)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -72,12 +71,14 @@ func (c Client) Put(path string, body []byte) {
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	if res.Body != nil {
 		defer res.Body.Close()
 	}
+
+	return nil
 }
 
 // Endpoint returns the full URL for an API endpoint.
@@ -87,9 +88,13 @@ func (c Client) Endpoint(path string) string {
 
 // ListEffects returns an array of effect names.
 func (c Client) ListEffects() ([]string, error) {
-	body := c.Get("effects/effectsList")
+	body, err := c.Get("effects/effectsList")
+	if err != nil {
+		return nil, err
+	}
+
 	var list []string
-	err := json.Unmarshal([]byte(body), &list)
+	err = json.Unmarshal([]byte(body), &list)
 	return list, err
 }
 
