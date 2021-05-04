@@ -17,7 +17,7 @@ const defaultConfigFile = ".picoleafrc"
 var verbose = flag.Bool("v", false, "Verbose")
 
 func usage() {
-	fmt.Println("usage: picoleaf <command>")
+	fmt.Println("usage: picoleaf [-v] <command>")
 	fmt.Println()
 	fmt.Println("Commands:")
 	fmt.Println()
