@@ -28,6 +28,7 @@ func usage() {
 	fmt.Println()
 	fmt.Println("   hsl      Set Nanoleaf to the provided HSL")
 	fmt.Println("   rgb      Set Nanoleaf to the provided RGB")
+	fmt.Println("   temp     Set Nanoleaf to the provided color temperature")
 	fmt.Println()
 	os.Exit(1)
 }
@@ -94,6 +95,8 @@ func main() {
 			doHSLCommand(client, flag.Args()[1:])
 		case "rgb":
 			doRGBCommand(client, flag.Args()[1:])
+		case "temp":
+			doColorTemperatureCommand(client, flag.Args()[1:])
 		case "effect":
 			doEffectCommand(client, flag.Args()[1:])
 		default:
@@ -101,6 +104,25 @@ func main() {
 		}
 	} else {
 		usage()
+	}
+}
+
+func doColorTemperatureCommand(client Client, args []string) {
+	if len(args) < 1 {
+		fmt.Println("usage: picoleaf temp <temperature>")
+		os.Exit(1)
+	}
+
+	temp, err := strconv.Atoi(args[0])
+	if err != nil || temp < 1200 || temp > 6500 {
+		fmt.Println("error: temperature must be an integer 1200-6500")
+		os.Exit(1)
+	}
+
+	err = client.SetColorTemperature(temp)
+	if err != nil {
+		fmt.Printf("error: failed to set color temperature: %v", err)
+		os.Exit(1)
 	}
 }
 

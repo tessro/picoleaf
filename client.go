@@ -116,6 +116,21 @@ func (c Client) SelectEffect(name string) error {
 	return nil
 }
 
+// SetColorTemperature sets the Nanoleaf's color temperature.
+func (c Client) SetColorTemperature(temperature int) error {
+	state := State{
+		ColorTemperature: &ColorTemperatureProperty{temperature},
+	}
+
+	bytes, err := json.Marshal(state)
+	if err != nil {
+		return err
+	}
+
+	c.Put("state", bytes)
+	return nil
+}
+
 // SetHSL sets the Nanoleaf's hue, saturation, and lightness (brightness).
 func (c Client) SetHSL(hue int, sat int, lightness int) error {
 	state := State{
