@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"net/http"
 	"os"
 	"os/user"
@@ -134,6 +135,12 @@ func (c Client) SetHSL(hue int, sat int, luminosity int) error {
 	return nil
 }
 
+// SetRGB sets the Nanoleaf's color by converting RGB to HSL.
+func (c Client) SetRGB(red int, green int, blue int) error {
+	h, s, l := rgbToHSL(red, green, blue)
+	return c.SetHSL(h, s, l)
+}
+
 // BrightnessProperty represents the brightness of the Nanoleaf.
 type BrightnessProperty struct {
 	Value    int `json:"value"`
@@ -247,6 +254,8 @@ func main() {
 				os.Exit(1)
 			}
 			client.Put("state", bytes)
+		case "rgb":
+			doRGBCommand(client, flag.Args()[1:])
 		case "effect":
 			doEffectCommand(client, flag.Args()[1:])
 		}
@@ -313,6 +322,73 @@ func doHSLCommand(client Client, args []string) {
 	err = client.SetHSL(hue, sat, lum)
 	if err != nil {
 		fmt.Printf("Failed to set HSL: %v", err)
+		os.Exit(1)
+	}
+}
+
+func rgbToHSL(red, green, blue int) (int, int, int) {
+	r := float64(red) / 255.0
+	g := float64(green) / 255.0
+	b := float64(blue) / 255.0
+
+	min := math.Min(math.Min(r, g), b)
+	max := math.Max(math.Max(r, g), b)
+
+	c := max - min
+	l := (max + min) / 2
+
+	if c == 0 { // achromatic
+		return 0, 0, int(math.Round(100 * l))
+	}
+
+	v := max
+
+	h := 0.0
+	switch v {
+	case r:
+		h = 0 + (g-b)/c
+	case g:
+		h = 2 + (b-r)/c
+	case b:
+		h = 4 + (r-g)/c
+	}
+	h *= 60
+	if h < 0 {
+		h += 360
+	}
+
+	s := (v - l) / math.Min(l, 1-l)
+
+	return int(math.Round(h)), int(math.Round(100 * s)), int(math.Round(100 * l))
+}
+
+func doRGBCommand(client Client, args []string) {
+	if len(args) != 3 {
+		fmt.Println("usage: picoleaf rgb <red> <green> <blue>")
+		os.Exit(1)
+	}
+
+	red, err := strconv.Atoi(args[0])
+	if err != nil || red < 0 || red > 255 {
+		fmt.Println("red must be an integer 0-255")
+		os.Exit(1)
+	}
+
+	green, err := strconv.Atoi(args[1])
+	if err != nil || green < 0 || green > 255 {
+		fmt.Println("green must be an integer 0-255")
+		os.Exit(1)
+	}
+
+	blue, err := strconv.Atoi(args[2])
+	if err != nil || blue < 0 || blue > 255 {
+		fmt.Println("blue must be an integer 0-255")
+		os.Exit(1)
+	}
+
+	err = client.SetRGB(red, green, blue)
+	if err != nil {
+		fmt.Printf("Failed to set RGB: %v", err)
 		os.Exit(1)
 	}
 }
