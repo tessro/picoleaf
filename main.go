@@ -50,8 +50,9 @@ func main() {
 	}
 
 	client := Client{
-		Host:  cfg.Section("").Key("host").String(),
-		Token: cfg.Section("").Key("access_token").String(),
+		Host:    cfg.Section("").Key("host").String(),
+		Token:   cfg.Section("").Key("access_token").String(),
+		Verbose: *verbose,
 	}
 
 	if *verbose {

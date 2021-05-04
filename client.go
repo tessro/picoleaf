@@ -14,13 +14,15 @@ type Client struct {
 	Host  string
 	Token string
 
+	Verbose bool
+
 	client http.Client
 }
 
 // Get performs a GET request.
 func (c Client) Get(path string) (string, error) {
-	if *verbose {
-		fmt.Println("\nGET", path)
+	if c.Verbose {
+		fmt.Println("GET", path)
 	}
 
 	url := c.Endpoint(path)
@@ -45,7 +47,7 @@ func (c Client) Get(path string) (string, error) {
 		return "", err
 	}
 
-	if *verbose {
+	if c.Verbose {
 		fmt.Println("<===", string(body))
 	}
 	return string(body), nil
@@ -53,7 +55,7 @@ func (c Client) Get(path string) (string, error) {
 
 // Put performs a PUT request.
 func (c Client) Put(path string, body []byte) error {
-	if *verbose {
+	if c.Verbose {
 		fmt.Println("PUT", path)
 		fmt.Println("===>", string(body))
 	}
