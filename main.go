@@ -242,18 +242,6 @@ func main() {
 			client.Put("state", bytes)
 		case "hsl":
 			doHSLCommand(client, flag.Args()[1:])
-		case "red":
-			state := State{
-				Brightness: &BrightnessProperty{60, 0},
-				Hue:        &HueProperty{0},
-				Saturation: &SaturationProperty{100},
-			}
-			bytes, err := json.Marshal(state)
-			if err != nil {
-				fmt.Printf("Failed to marshal JSON: %v", err)
-				os.Exit(1)
-			}
-			client.Put("state", bytes)
 		case "rgb":
 			doRGBCommand(client, flag.Args()[1:])
 		case "effect":
