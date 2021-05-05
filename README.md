@@ -46,6 +46,7 @@ picoleaf brightness <temperature>            # Set Nanoleaf to the provided brig
 # Effects
 picoleaf effect list           # List installed effects
 picoleaf effect select <name>  # Activate the named effect
+picoleaf effect custom [<panel> <red> <green> <blue> <transition time>] ...
 
 # Panel properties
 picoleaf panel info     # Print all panel information

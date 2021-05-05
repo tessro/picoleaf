@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -138,6 +139,7 @@ func doEffectCommand(client Client, args []string) {
 	usage := func() {
 		fmt.Println("usage: picoleaf effect list")
 		fmt.Println("       picoleaf effect select <name>")
+		fmt.Println("       picoleaf effect custom [<panel> <red> <green> <blue> <transition time>] ...")
 		os.Exit(1)
 	}
 
@@ -147,6 +149,59 @@ func doEffectCommand(client Client, args []string) {
 
 	command := args[0]
 	switch command {
+	case "custom":
+		customArgs := args[1:]
+		numFrameArgs := 5
+		if len(customArgs)%numFrameArgs != 0 {
+			fmt.Println("usage: picoleaf effect custom [<panel> <red> <green> <blue> <transition time>] ...")
+		}
+
+		numFrames := len(customArgs) / numFrameArgs
+		frames := make([]SetPanelColor, numFrames)
+		for i := 0; i < numFrames; i++ {
+			offset := numFrameArgs * i
+			panelID, err := strconv.ParseUint(customArgs[offset], 10, 16)
+			if err != nil {
+				fmt.Printf("error: expected panel ID between 0-%d, got %s", math.MaxUint16, customArgs[offset])
+				os.Exit(1)
+			}
+
+			red, err := strconv.ParseUint(customArgs[offset+1], 10, 8)
+			if err != nil {
+				fmt.Printf("error: expected red value between 0-%d, got %s", math.MaxUint8, customArgs[offset+1])
+				os.Exit(1)
+			}
+
+			green, err := strconv.ParseUint(customArgs[offset+2], 10, 8)
+			if err != nil {
+				fmt.Printf("error: expected green value between 0-%d, got %s", math.MaxUint8, customArgs[offset+2])
+				os.Exit(1)
+			}
+
+			blue, err := strconv.ParseUint(customArgs[offset+3], 10, 8)
+			if err != nil {
+				fmt.Printf("error: expected blue value between 0-%d, got %s", math.MaxUint8, customArgs[offset+3])
+				os.Exit(1)
+			}
+
+			transitionTime, err := strconv.ParseUint(customArgs[offset+4], 10, 16)
+			if err != nil {
+				fmt.Printf("error: expected transition time between 0-%d, got %s", math.MaxUint16, customArgs[offset+4])
+				os.Exit(1)
+			}
+
+			frames[i].PanelID = uint16(panelID)
+			frames[i].Red = uint8(red)
+			frames[i].Green = uint8(green)
+			frames[i].Blue = uint8(blue)
+			frames[i].TransitionTime = uint16(transitionTime)
+		}
+
+		err := client.SetCustomColors(frames)
+		if err != nil {
+			fmt.Println("error: failed to start external control:", err)
+			os.Exit(1)
+		}
 	case "list":
 		list, err := client.ListEffects()
 		if err != nil {

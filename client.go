@@ -2,12 +2,17 @@ package main
 
 import (
 	"bytes"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math"
+	"net"
 	"net/http"
 )
+
+// ExternalControlPort is the UDP port for Nanoleaf external control.
+const ExternalControlPort = 60222
 
 // Client is a Nanoleaf REST API client.
 type Client struct {
@@ -271,6 +276,74 @@ func (c Client) SetHSL(hue int, sat int, lightness int) error {
 func (c Client) SetRGB(red int, green int, blue int) error {
 	h, s, l := rgbToHSL(red, green, blue)
 	return c.SetHSL(h, s, l)
+}
+
+// startExternalControl sets Nanoleaf to accept UDP input.
+func (c Client) startExternalControl() error {
+	_, err := c.Put("effects", []byte(`{"write":{"command":"display","animType":"extControl","extControlVersion":"v2"}}`))
+	return err
+}
+
+// SetPanelColor represents a frame of external color data.
+type SetPanelColor struct {
+	PanelID        uint16
+	Red            uint8
+	Green          uint8
+	Blue           uint8
+	White          uint8
+	TransitionTime uint16
+}
+
+// SetCustomColors sets individual Nanoleaf pane colors.
+func (c Client) SetCustomColors(frames []SetPanelColor) error {
+	err := c.startExternalControl()
+	if err != nil {
+		return err
+	}
+
+	hostAddr, err := net.ResolveTCPAddr("tcp", c.Host)
+	if err != nil {
+		return err
+	}
+
+	laddr, err := net.ResolveUDPAddr("udp", ":0")
+	if err != nil {
+		return err
+	}
+
+	raddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", hostAddr.IP, ExternalControlPort))
+	if err != nil {
+		return err
+	}
+
+	conn, err := net.DialUDP("udp", laddr, raddr)
+	if err != nil {
+		return err
+	}
+
+	numPanels := len(frames)
+	if numPanels < 0 || numPanels > math.MaxUint16 {
+		return fmt.Errorf("Expected between 0-%d panels, got %d", math.MaxUint16, numPanels)
+	}
+
+	headerSize := 2
+	panelFrameSize := 8
+	controlFrameSize := headerSize + panelFrameSize*numPanels
+	buf := make([]byte, controlFrameSize)
+	binary.BigEndian.PutUint16(buf, uint16(numPanels))
+	for i, panel := range frames {
+		offset := headerSize + panelFrameSize*i
+		binary.BigEndian.PutUint16(buf[offset:], panel.PanelID)
+		buf[offset+2] = panel.Red
+		buf[offset+3] = panel.Green
+		buf[offset+4] = panel.Blue
+		buf[offset+5] = panel.White
+		binary.BigEndian.PutUint16(buf[offset+6:], panel.TransitionTime)
+	}
+
+	conn.Write(buf)
+	conn.Close()
+	return nil
 }
 
 // BrightnessProperty represents the brightness of the Nanoleaf.
