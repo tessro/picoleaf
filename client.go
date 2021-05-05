@@ -55,17 +55,16 @@ func (c Client) Get(path string) (string, error) {
 }
 
 // Put performs a PUT request.
-func (c Client) Put(path string, body []byte) error {
+func (c Client) Put(path string, body []byte) (string, error) {
 	if c.Verbose {
 		fmt.Println("PUT", path)
 		fmt.Println("===>", string(body))
-		fmt.Println()
 	}
 
 	url := c.Endpoint(path)
 	req, err := http.NewRequest(http.MethodPut, url, nil)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -75,14 +74,26 @@ func (c Client) Put(path string, body []byte) error {
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if res.Body != nil {
 		defer res.Body.Close()
 	}
 
-	return nil
+	responseBody, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+
+	if c.Verbose {
+		fmt.Println("<===", res.Status)
+		if len(responseBody) > 0 {
+			fmt.Println("<===", string(responseBody))
+		}
+		fmt.Println()
+	}
+	return string(responseBody), nil
 }
 
 // Endpoint returns the full URL for an API endpoint.
@@ -178,7 +189,8 @@ func (c Client) Off() error {
 	if err != nil {
 		return err
 	}
-	return c.Put("state", bytes)
+	_, err = c.Put("state", bytes)
+	return err
 }
 
 // On turns on Nanoleaf.
@@ -190,7 +202,8 @@ func (c Client) On() error {
 	if err != nil {
 		return err
 	}
-	return c.Put("state", bytes)
+	_, err = c.Put("state", bytes)
+	return err
 }
 
 // SelectEffect activates the specified effect.
