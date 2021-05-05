@@ -24,6 +24,7 @@ func usage() {
 	fmt.Println("   off          Turn off Nanoleaf")
 	fmt.Println()
 	fmt.Println("   effect       Control Nanoleaf effects")
+	fmt.Println("   panel        Control Nanoleaf panel")
 	fmt.Println()
 	fmt.Println("   hsl          Set Nanoleaf to the provided HSL")
 	fmt.Println("   rgb          Set Nanoleaf to the provided RGB")
@@ -81,6 +82,8 @@ func main() {
 				fmt.Printf("error: failed to turn on Nanoleaf: %v", err)
 				os.Exit(1)
 			}
+		case "panel":
+			doPanelCommand(client, flag.Args()[1:])
 		case "rgb":
 			doRGBCommand(client, flag.Args()[1:])
 		case "temp":
@@ -165,6 +168,112 @@ func doEffectCommand(client Client, args []string) {
 			fmt.Printf("error: failed to select effect: %v", err)
 			os.Exit(1)
 		}
+	default:
+		usage()
+	}
+}
+
+func doPanelCommand(client Client, args []string) {
+	usage := func() {
+		fmt.Println("usage: picoleaf panel info")
+		fmt.Println("       picoleaf panel model")
+		fmt.Println("       picoleaf panel name")
+		fmt.Println("       picoleaf panel version")
+		os.Exit(1)
+	}
+
+	if len(args) != 1 {
+		usage()
+	}
+
+	panelInfo, err := client.GetPanelInfo()
+	if err != nil {
+		fmt.Printf("error: failed to get Nanoleaf state: %v", err)
+		os.Exit(1)
+	}
+
+	command := args[0]
+	switch command {
+	case "info":
+		fmt.Println("Name:", panelInfo.Name)
+		fmt.Println()
+		fmt.Println("Manufacturer:", panelInfo.Manufacturer)
+		fmt.Println("Model:       ", panelInfo.Model)
+		fmt.Println("Serial No:   ", panelInfo.SerialNo)
+		fmt.Println()
+		fmt.Println("Firmware Version:", panelInfo.FirmwareVersion)
+		fmt.Println()
+		fmt.Println("State:")
+		fmt.Println("  On:  ", panelInfo.State.On.Value)
+		fmt.Println("  Mode:", panelInfo.State.ColorMode)
+		fmt.Println()
+		fmt.Printf("  Hue:        %3d° [%d°-%d°]\n", panelInfo.State.Hue.Value, *panelInfo.State.Hue.Min, *panelInfo.State.Hue.Max)
+		fmt.Printf("  Saturation: %3d  [%d-%d]\n", panelInfo.State.Saturation.Value, *panelInfo.State.Saturation.Min, *panelInfo.State.Saturation.Max)
+		fmt.Printf("  Brightness: %3d  [%d-%d]\n", panelInfo.State.Brightness.Value, *panelInfo.State.Brightness.Min, *panelInfo.State.Brightness.Max)
+		fmt.Println()
+		fmt.Printf("  Color Temperature: %4dK [%dK-%dK]\n", panelInfo.State.ColorTemperature.Value, *panelInfo.State.ColorTemperature.Min, *panelInfo.State.ColorTemperature.Max)
+		fmt.Println()
+		fmt.Println("Effects:")
+		fmt.Println("  Selected:", panelInfo.Effects.Selected)
+		fmt.Println("  Available:")
+		for _, effect := range panelInfo.Effects.List {
+			fmt.Println("  -", effect)
+		}
+		fmt.Println()
+		fmt.Println("Layout:")
+		fmt.Printf("  Orientation: %d° [%d°-%d°]\n", panelInfo.PanelLayout.GlobalOrientation.Value, panelInfo.PanelLayout.GlobalOrientation.Min, panelInfo.PanelLayout.GlobalOrientation.Max)
+		fmt.Println("  Panels:     ", panelInfo.PanelLayout.Layout.NumPanels)
+		fmt.Println("  Side Length:", panelInfo.PanelLayout.Layout.SideLength)
+		fmt.Println()
+		fmt.Println("  Panel Positions:")
+		for _, panel := range panelInfo.PanelLayout.Layout.PositionData {
+			fmt.Printf("  - %3d: (%d, %d, %d°)\n", panel.PanelID, panel.X, panel.Y, panel.O)
+		}
+		fmt.Println()
+		fmt.Println("Rhythm:")
+		fmt.Println("  ID:      ", panelInfo.Rhythm.ID)
+		fmt.Printf("  Position: (%.0f, %.0f, %.0f°)\n", panelInfo.Rhythm.Position.X, panelInfo.Rhythm.Position.Y, panelInfo.Rhythm.Position.O)
+		fmt.Println()
+		fmt.Println("  Connected:    ", panelInfo.Rhythm.Connected)
+		fmt.Println("  Aux Available:", panelInfo.Rhythm.AuxAvailable)
+		fmt.Println("  Active:       ", panelInfo.Rhythm.Active)
+		fmt.Println("  Mode:         ", panelInfo.Rhythm.Mode)
+		fmt.Println()
+		fmt.Println("  Versions:")
+		fmt.Println("    Hardware:", panelInfo.Rhythm.HardwareVersion)
+		fmt.Println("    Firmware:", panelInfo.Rhythm.FirmwareVersion)
+		fmt.Println()
+	case "layout":
+		fmt.Printf("Orientation: %d° [%d°-%d°]\n", panelInfo.PanelLayout.GlobalOrientation.Value, panelInfo.PanelLayout.GlobalOrientation.Min, panelInfo.PanelLayout.GlobalOrientation.Max)
+		fmt.Println("Panels:     ", panelInfo.PanelLayout.Layout.NumPanels)
+		fmt.Println("Side Length:", panelInfo.PanelLayout.Layout.SideLength)
+		fmt.Println()
+		fmt.Println("Positions:")
+		for _, panel := range panelInfo.PanelLayout.Layout.PositionData {
+			fmt.Printf("- %3d: (%d, %d, %d°)\n", panel.PanelID, panel.X, panel.Y, panel.O)
+		}
+		fmt.Println()
+	case "model":
+		fmt.Println(panelInfo.Model)
+	case "name":
+		fmt.Println(panelInfo.Name)
+	case "state":
+		fmt.Println("On:  ", panelInfo.State.On.Value)
+		fmt.Println("Mode:", panelInfo.State.ColorMode)
+		fmt.Println()
+		fmt.Printf("Brightness: %3d [%d-%d]\n", panelInfo.State.Brightness.Value, *panelInfo.State.Brightness.Min, *panelInfo.State.Brightness.Max)
+		fmt.Printf("Hue:        %3d [%d-%d]\n", panelInfo.State.Hue.Value, *panelInfo.State.Hue.Min, *panelInfo.State.Hue.Max)
+		fmt.Printf("Saturation: %3d [%d-%d]\n", panelInfo.State.Saturation.Value, *panelInfo.State.Saturation.Min, *panelInfo.State.Saturation.Max)
+		fmt.Println()
+		fmt.Printf("Color Temperature: %4dK [%dK-%dK]\n", panelInfo.State.ColorTemperature.Value, *panelInfo.State.ColorTemperature.Min, *panelInfo.State.ColorTemperature.Max)
+		fmt.Println()
+	case "version":
+		fmt.Println("Panel Firmware:", panelInfo.FirmwareVersion)
+		fmt.Println()
+		fmt.Println("Rhythm:")
+		fmt.Println("  Hardware:", panelInfo.Rhythm.HardwareVersion)
+		fmt.Println("  Firmware:", panelInfo.Rhythm.FirmwareVersion)
+		fmt.Println()
 	default:
 		usage()
 	}

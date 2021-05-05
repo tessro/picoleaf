@@ -90,6 +90,73 @@ func (c Client) Endpoint(path string) string {
 	return fmt.Sprintf("http://%s/api/v1/%s/%s", c.Host, c.Token, path)
 }
 
+// Effects represents the Nanoleaf panel effects state.
+type Effects struct {
+	Selected string   `json:"select"`
+	List     []string `json:"effectsList"`
+}
+
+// Rhythm represents the Nanoleaf rhythm state.
+type Rhythm struct {
+	Connected       bool   `json:"rhythmConnected"`
+	Active          bool   `json:"rhythmActive"`
+	ID              int    `json:"rhythmId"`
+	HardwareVersion string `json:"hardwareVersion"`
+	FirmwareVersion string `json:"firmwareVersion"`
+	AuxAvailable    bool   `json:"auxAvailable"`
+	Mode            int    `json:"rhythmMode"`
+	Position        struct {
+		X float64 `json:"x"`
+		Y float64 `json:"y"`
+		O float64 `json:"o"`
+	} `json:"rhythmPos"`
+}
+
+// PanelLayout represents the Nanoleaf panel layout.
+type PanelLayout struct {
+	Layout struct {
+		NumPanels    int `json:"numPanels"`
+		SideLength   int `json:"sideLength"`
+		PositionData []struct {
+			PanelID   int `json:"panelId"`
+			X         int `json:"x"`
+			Y         int `json:"y"`
+			O         int `json:"o"`
+			ShapeType int `json:"shapeType"`
+		} `json:"positionData"`
+	} `json:"layout"`
+	GlobalOrientation struct {
+		Value int `json:"value"`
+		Max   int `json:"max"`
+		Min   int `json:"min"`
+	} `json:"globalOrientation"`
+}
+
+// PanelInfo represents the Nanoleaf panel info response.
+type PanelInfo struct {
+	Name            string      `json:"name"`
+	SerialNo        string      `json:"serialNo"`
+	Manufacturer    string      `json:"manufacturer"`
+	FirmwareVersion string      `json:"firmwareVersion"`
+	Model           string      `json:"model"`
+	State           State       `json:"state"`
+	Effects         Effects     `json:"effects"`
+	PanelLayout     PanelLayout `json:"panelLayout"`
+	Rhythm          Rhythm      `json:"rhythm"`
+}
+
+// GetPanelInfo returns the Nanoleaf panel info.
+func (c Client) GetPanelInfo() (*PanelInfo, error) {
+	body, err := c.Get("")
+	if err != nil {
+		return nil, err
+	}
+
+	var panelInfo PanelInfo
+	err = json.Unmarshal([]byte(body), &panelInfo)
+	return &panelInfo, err
+}
+
 // ListEffects returns an array of effect names.
 func (c Client) ListEffects() ([]string, error) {
 	body, err := c.Get("effects/effectsList")
@@ -143,7 +210,7 @@ func (c Client) SelectEffect(name string) error {
 // SetBrightness sets the Nanoleaf's brightness.
 func (c Client) SetBrightness(brightness int) error {
 	state := State{
-		Brightness: &BrightnessProperty{brightness, 0},
+		Brightness: &BrightnessProperty{Value: brightness},
 	}
 
 	bytes, err := json.Marshal(state)
@@ -158,7 +225,7 @@ func (c Client) SetBrightness(brightness int) error {
 // SetColorTemperature sets the Nanoleaf's color temperature.
 func (c Client) SetColorTemperature(temperature int) error {
 	state := State{
-		ColorTemperature: &ColorTemperatureProperty{temperature},
+		ColorTemperature: &ColorTemperatureProperty{Value: temperature},
 	}
 
 	bytes, err := json.Marshal(state)
@@ -173,9 +240,9 @@ func (c Client) SetColorTemperature(temperature int) error {
 // SetHSL sets the Nanoleaf's hue, saturation, and lightness (brightness).
 func (c Client) SetHSL(hue int, sat int, lightness int) error {
 	state := State{
-		Brightness: &BrightnessProperty{lightness, 0},
-		Hue:        &HueProperty{hue},
-		Saturation: &SaturationProperty{sat},
+		Brightness: &BrightnessProperty{Value: lightness},
+		Hue:        &HueProperty{Value: hue},
+		Saturation: &SaturationProperty{Value: sat},
 	}
 
 	bytes, err := json.Marshal(state)
@@ -195,18 +262,24 @@ func (c Client) SetRGB(red int, green int, blue int) error {
 
 // BrightnessProperty represents the brightness of the Nanoleaf.
 type BrightnessProperty struct {
-	Value    int `json:"value"`
-	Duration int `json:"duration,omitempty"`
+	Min      *int `json:"min,omitempty"`
+	Max      *int `json:"max,omitempty"`
+	Value    int  `json:"value"`
+	Duration int  `json:"duration,omitempty"`
 }
 
 // ColorTemperatureProperty represents the color temperature of the Nanoleaf.
 type ColorTemperatureProperty struct {
-	Value int `json:"value"`
+	Min   *int `json:"min,omitempty"`
+	Max   *int `json:"max,omitempty"`
+	Value int  `json:"value"`
 }
 
 // HueProperty represents the hue of the Nanoleaf.
 type HueProperty struct {
-	Value int `json:"value"`
+	Min   *int `json:"min,omitempty"`
+	Max   *int `json:"max,omitempty"`
+	Value int  `json:"value"`
 }
 
 // OnProperty represents the power state of the Nanoleaf.
@@ -216,7 +289,9 @@ type OnProperty struct {
 
 // SaturationProperty represents the saturation of the Nanoleaf.
 type SaturationProperty struct {
-	Value int `json:"value"`
+	Min   *int `json:"min,omitempty"`
+	Max   *int `json:"max,omitempty"`
+	Value int  `json:"value"`
 }
 
 // State represents a Nanoleaf state.
@@ -226,6 +301,7 @@ type State struct {
 	ColorTemperature *ColorTemperatureProperty `json:"ct,omitempty"`
 	Hue              *HueProperty              `json:"hue,omitempty"`
 	Saturation       *SaturationProperty       `json:"sat,omitempty"`
+	ColorMode        string                    `json:"colorMode,omitempty"`
 }
 
 // effectsSelectRequest represents a JSON PUT body for `effects/select`.

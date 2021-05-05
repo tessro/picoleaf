@@ -46,4 +46,10 @@ picoleaf brightness <temperature>            # Set Nanoleaf to the provided brig
 # Effects
 picoleaf effect list           # List installed effects
 picoleaf effect select <name>  # Activate the named effect
+
+# Panel properties
+picoleaf panel info     # Print all panel information
+picoleaf panel model    # Print Nanoleaf model
+picoleaf panel name     # Print Nanoleaf name
+picoleaf panel version  # Print Nanoleaf and rhythm module versions
 ```
