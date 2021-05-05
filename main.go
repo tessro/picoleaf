@@ -39,7 +39,7 @@ func main() {
 
 	usr, err := user.Current()
 	if err != nil {
-		fmt.Printf("error: failed to fetch current user: %v", err)
+		fmt.Println("error: failed to fetch current user:", err)
 		os.Exit(1)
 	}
 	dir := usr.HomeDir
@@ -47,7 +47,7 @@ func main() {
 
 	cfg, err := ini.Load(configFilePath)
 	if err != nil {
-		fmt.Printf("error: failed to read file: %v", err)
+		fmt.Println("error: failed to read file:", err)
 		os.Exit(1)
 	}
 
@@ -73,13 +73,13 @@ func main() {
 		case "off":
 			err = client.Off()
 			if err != nil {
-				fmt.Printf("error: failed to turn off Nanoleaf: %v", err)
+				fmt.Println("error: failed to turn off Nanoleaf:", err)
 				os.Exit(1)
 			}
 		case "on":
 			err = client.On()
 			if err != nil {
-				fmt.Printf("error: failed to turn on Nanoleaf: %v", err)
+				fmt.Println("error: failed to turn on Nanoleaf:", err)
 				os.Exit(1)
 			}
 		case "panel":
@@ -110,7 +110,7 @@ func doBrightnessCommand(client Client, args []string) {
 
 	err = client.SetBrightness(brightness)
 	if err != nil {
-		fmt.Printf("error: failed to set brightness: %v", err)
+		fmt.Println("error: failed to set brightness:", err)
 		os.Exit(1)
 	}
 }
@@ -129,7 +129,7 @@ func doColorTemperatureCommand(client Client, args []string) {
 
 	err = client.SetColorTemperature(temp)
 	if err != nil {
-		fmt.Printf("error: failed to set color temperature: %v", err)
+		fmt.Println("error: failed to set color temperature:", err)
 		os.Exit(1)
 	}
 }
@@ -150,7 +150,7 @@ func doEffectCommand(client Client, args []string) {
 	case "list":
 		list, err := client.ListEffects()
 		if err != nil {
-			fmt.Printf("error: failed retrieve effects list: %v", err)
+			fmt.Println("error: failed retrieve effects list:", err)
 			os.Exit(1)
 		}
 		for _, name := range list {
@@ -165,7 +165,7 @@ func doEffectCommand(client Client, args []string) {
 		name := args[1]
 		err := client.SelectEffect(name)
 		if err != nil {
-			fmt.Printf("error: failed to select effect: %v", err)
+			fmt.Println("error: failed to select effect:", err)
 			os.Exit(1)
 		}
 	default:
@@ -188,7 +188,7 @@ func doPanelCommand(client Client, args []string) {
 
 	panelInfo, err := client.GetPanelInfo()
 	if err != nil {
-		fmt.Printf("error: failed to get Nanoleaf state: %v", err)
+		fmt.Println("error: failed to get Nanoleaf state:", err)
 		os.Exit(1)
 	}
 
@@ -305,7 +305,7 @@ func doHSLCommand(client Client, args []string) {
 
 	err = client.SetHSL(hue, sat, lightness)
 	if err != nil {
-		fmt.Printf("error: failed to set HSL: %v", err)
+		fmt.Println("error: failed to set HSL:", err)
 		os.Exit(1)
 	}
 }
@@ -336,7 +336,7 @@ func doRGBCommand(client Client, args []string) {
 
 	err = client.SetRGB(red, green, blue)
 	if err != nil {
-		fmt.Printf("error: failed to set RGB: %v", err)
+		fmt.Println("error: failed to set RGB:", err)
 		os.Exit(1)
 	}
 }
