@@ -14,12 +14,24 @@ Picoleaf expects a `.picoleafrc` file in your home directory, with the
 following settings:
 
 ```ini
-host=<ip address>:<port>
+host=<hostname or ip address>:<port>
 access_token=<token>
 ```
 
 You can find your Nanoleaf's IP address via your router console. Your Nanoleaf's
 port is probably `16021`.
+
+Alternatively, you may be able to use mDNS service discovery. For example, on
+macOS you can do the following:
+
+```bash
+$ dns-sd -Z _nanoleafapi | grep -o 'Nanoleaf-.*\.local'
+# => Nanoleaf-Light-Panels-xx-xx-xx.local
+#
+# Use this as your `host` setting. Don't forget to append the port number.
+#
+# (You'll need to Ctrl-C to wrap up, since `dns-sd` listens indefinitely.)
+```
 
 To create an access token, you'll need to do the following:
 
@@ -28,7 +40,6 @@ To create an access token, you'll need to do the following:
 2. Within 30 seconds, run: `curl -iLX POST http://<ip address>:<port>/api/v1/new`
 
 This should print a token to your console.
-
 
 ## Usage
 
