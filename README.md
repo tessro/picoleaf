@@ -4,11 +4,26 @@ Picoleaf is a tiny CLI tool for controlling Nanoleaf.
 
 ## Installation
 
-Make sure `$GOPATH/bin` is on your `$PATH`, then run:
+### macOS
+
+`picoleaf` is available via a Homebrew Tap:
+
+```bash
+brew install paulrosania/command-home/picoleaf
+```
+
+You can also download a precompiled binary from the
+[releases](https://github.com/paulrosania/picoleaf/releases) page.
+
+### Source
+
+Make sure Go is installed, and that `$GOPATH/bin` is on your `$PATH`. Then run:
 
 ```bash
 go install github.com/paulrosania/picoleaf
 ```
+
+# Getting Started
 
 Picoleaf expects a `.picoleafrc` file in your home directory, with the
 following settings:
