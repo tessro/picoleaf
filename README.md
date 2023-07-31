@@ -40,8 +40,9 @@ Alternatively, you may be able to use mDNS service discovery. For example, on
 macOS you can do the following:
 
 ```bash
-$ dns-sd -Z _nanoleafapi | grep -o 'Nanoleaf-.*\.local'
-# => Nanoleaf-Light-Panels-xx-xx-xx.local
+$ dns-sd -Z _nanoleafapi | grep -o '\w*\-.*\.local'
+
+# => 16021 Nanoleaf-Light-Panels-xx-xx-xx.local
 #
 # Use this as your `host` setting. Don't forget to append the port number.
 #
