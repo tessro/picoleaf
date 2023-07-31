@@ -57,6 +57,14 @@ To create an access token, you'll need to do the following:
 
 This should print a token to your console.
 
+## [macOS only] `.picoleafrc` creation helper script
+
+If you are using macOS, you can use a helper script to run these commands:
+
+1. On your Nanoleaf controller, hold the on-off button for 5-7 seconds until the
+   LED starts flashing in a pattern.
+2. Within 30 seconds, run: `./contrib/macos/create_picoleafrc > ~/.picoleafrc`
+
 ## Usage
 
 ```bash
