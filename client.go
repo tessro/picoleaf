@@ -162,15 +162,15 @@ type PanelInfo struct {
 }
 
 // GetPanelInfo returns the Nanoleaf panel info.
-func (c Client) GetPanelInfo() (*PanelInfo, error) {
+func (c Client) GetPanelInfo() (*PanelInfo, string, error) {
 	body, err := c.Get("")
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	var panelInfo PanelInfo
 	err = json.Unmarshal([]byte(body), &panelInfo)
-	return &panelInfo, err
+	return &panelInfo, string(body), err
 }
 
 // ListEffects returns an array of effect names.

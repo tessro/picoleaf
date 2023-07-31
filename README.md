@@ -75,8 +75,9 @@ picoleaf effect select <name>  # Activate the named effect
 picoleaf effect custom [<panel> <red> <green> <blue> <transition time>] ...
 
 # Panel properties
-picoleaf panel info     # Print all panel information
-picoleaf panel model    # Print Nanoleaf model
-picoleaf panel name     # Print Nanoleaf name
-picoleaf panel version  # Print Nanoleaf and rhythm module versions
+picoleaf panel info      # Print all panel information
+picoleaf panel info_json # Print all panel information in json format
+picoleaf panel model     # Print Nanoleaf model
+picoleaf panel name      # Print Nanoleaf name
+picoleaf panel version   # Print Nanoleaf and rhythm module versions
 ```

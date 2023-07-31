@@ -231,6 +231,7 @@ func doEffectCommand(client Client, args []string) {
 func doPanelCommand(client Client, args []string) {
 	usage := func() {
 		fmt.Println("usage: picoleaf panel info")
+		fmt.Println("       picoleaf panel info_json")
 		fmt.Println("       picoleaf panel model")
 		fmt.Println("       picoleaf panel name")
 		fmt.Println("       picoleaf panel version")
@@ -241,7 +242,7 @@ func doPanelCommand(client Client, args []string) {
 		usage()
 	}
 
-	panelInfo, err := client.GetPanelInfo()
+	panelInfo, body, err := client.GetPanelInfo()
 	if err != nil {
 		fmt.Println("error: failed to get Nanoleaf state:", err)
 		os.Exit(1)
@@ -298,6 +299,8 @@ func doPanelCommand(client Client, args []string) {
 		fmt.Println("    Hardware:", panelInfo.Rhythm.HardwareVersion)
 		fmt.Println("    Firmware:", panelInfo.Rhythm.FirmwareVersion)
 		fmt.Println()
+	case "info_json":
+		fmt.Println(body)
 	case "layout":
 		fmt.Printf("Orientation: %d° [%d°-%d°]\n", panelInfo.PanelLayout.GlobalOrientation.Value, panelInfo.PanelLayout.GlobalOrientation.Min, panelInfo.PanelLayout.GlobalOrientation.Max)
 		fmt.Println("Panels:     ", panelInfo.PanelLayout.Layout.NumPanels)
