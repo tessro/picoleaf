@@ -33,6 +33,8 @@ host=<hostname or ip address>:<port>
 access_token=<token>
 ```
 
+## Manual creation of .picoleafrc
+
 You can find your Nanoleaf's IP address via your router console. Your Nanoleaf's
 port is probably `16021`.
 
@@ -56,6 +58,15 @@ To create an access token, you'll need to do the following:
 2. Within 30 seconds, run: `curl -iLX POST http://<ip address>:<port>/api/v1/new`
 
 This should print a token to your console.
+
+Create and edit `~/.picoleafrc` with the values you have discovered.
+
+## Use of the create picoleafrc helper 
+This tiny script will put together your `.picoleafrc` file for you.
+
+1. On your Nanoleaf controller, hold the on-off button for 5-7 seconds until the
+   LED starts flashing in a pattern.
+2. Within 30 seconds, run: `./create_picoleafrc > ~/.picoleafrc`
 
 ## Usage
 
