@@ -18,15 +18,15 @@ var configFilePath string
 var verbose = flag.Bool("v", false, "Verbose")
 
 func init() {
-  usr, err := user.Current()
-  if err != nil {
-    fmt.Println("error: failed to fetch current user:", err)
-    os.Exit(1)
-  }
-  dir := usr.HomeDir
-  defaultConfigFilePath := filepath.Join(dir, defaultConfigFile)
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Println("error: failed to fetch current user:", err)
+		os.Exit(1)
+	}
+	dir := usr.HomeDir
+	defaultConfigFilePath := filepath.Join(dir, defaultConfigFile)
 
-  flag.StringVar(&configFilePath, "f", defaultConfigFilePath, "Config file path")
+	flag.StringVar(&configFilePath, "f", defaultConfigFilePath, "Config file path")
 }
 
 func usage() {
