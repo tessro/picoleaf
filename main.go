@@ -45,6 +45,8 @@ func usage() {
 	fmt.Println("   temp         Set Nanoleaf to the provided color temperature")
 	fmt.Println("   brightness   Set Nanoleaf to the provided brightness")
 	fmt.Println()
+	fmt.Println("   get          Send a GET request to the Nanoleaf")
+	fmt.Println()
 	os.Exit(1)
 }
 
@@ -74,6 +76,8 @@ func main() {
 			doBrightnessCommand(client, flag.Args()[1:])
 		case "effect":
 			doEffectCommand(client, flag.Args()[1:])
+		case "get":
+			doGetCommand(client, flag.Args()[1:])
 		case "hsl":
 			doHSLCommand(client, flag.Args()[1:])
 		case "off":
@@ -231,6 +235,21 @@ func doEffectCommand(client Client, args []string) {
 	default:
 		usage()
 	}
+}
+
+func doGetCommand(client Client, args []string) {
+	if len(args) < 1 {
+		fmt.Println("usage: picoleaf get <path>")
+		os.Exit(1)
+	}
+
+	res, err := client.Get(args[0])
+	if err != nil {
+		fmt.Println("error: failed to set color temperature:", err)
+		os.Exit(1)
+	}
+
+	fmt.Println(res)
 }
 
 func doPanelCommand(client Client, args []string) {
