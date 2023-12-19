@@ -18,4 +18,5 @@ changelog:
     exclude:
       - '^ci:'
       - '^docs:'
+      - '^internal:'
       - '^test:'
