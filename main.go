@@ -14,10 +14,23 @@ import (
 
 const defaultConfigFile = ".picoleafrc"
 
+var configFilePath string
 var verbose = flag.Bool("v", false, "Verbose")
 
+func init() {
+  usr, err := user.Current()
+  if err != nil {
+    fmt.Println("error: failed to fetch current user:", err)
+    os.Exit(1)
+  }
+  dir := usr.HomeDir
+  defaultConfigFilePath := filepath.Join(dir, defaultConfigFile)
+
+  flag.StringVar(&configFilePath, "f", defaultConfigFilePath, "Config file path")
+}
+
 func usage() {
-	fmt.Println("usage: picoleaf [-v] <command>")
+	fmt.Println("usage: picoleaf [-f <path>] [-v] <command>")
 	fmt.Println()
 	fmt.Println("Commands:")
 	fmt.Println()
@@ -37,14 +50,6 @@ func usage() {
 
 func main() {
 	flag.Parse()
-
-	usr, err := user.Current()
-	if err != nil {
-		fmt.Println("error: failed to fetch current user:", err)
-		os.Exit(1)
-	}
-	dir := usr.HomeDir
-	configFilePath := filepath.Join(dir, defaultConfigFile)
 
 	cfg, err := ini.Load(configFilePath)
 	if err != nil {
